@@ -7,8 +7,8 @@ import os
 
 # Импортируем подмодули Flask для запуска веб-сервиса.
 from flask import Flask, request
-app = Flask(__name__)
 
+app = Flask(__name__)
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -40,9 +40,14 @@ def main():
         indent=2
     )
 
+
 # Функция для непосредственной обработки диалога.
 def handle_dialog(req, res):
     user_id = req['session']['user_id']
+
+    response = requests.get('https://ru.meming.world/wiki/Special:Random')
+    html_res = str(response.content)
+    soup = BeautifulSoup(html_res)
 
     if req['session']['new']:
         # Это новый пользователь.
@@ -56,12 +61,7 @@ def handle_dialog(req, res):
             ]
         }
 
-        response = requests.get('https://ru.meming.world/wiki/Special:Random')
-        html_res = str(response.content)
-        soup = BeautifulSoup(html_res)
-        text = str(soup.find('div', {'class': 'suggestions'}))
-
-        res['response']['text'] = 'Привет! Купи слона!' + text
+        res['response']['text'] = 'Привет! Купи слона!' + soup.find('div', {'class': 'suggestions'})
         res['response']['buttons'] = get_suggests(user_id)
         return
 
@@ -81,6 +81,7 @@ def handle_dialog(req, res):
         req['request']['original_utterance']
     )
     res['response']['buttons'] = get_suggests(user_id)
+
 
 # Функция возвращает две подсказки для ответа.
 def get_suggests(user_id):
