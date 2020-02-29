@@ -45,10 +45,6 @@ def main():
 def handle_dialog(req, res):
     user_id = req['session']['user_id']
 
-    response = requests.get('https://ru.meming.world/wiki/Special:Random')
-    html_res = str(response.content)
-    soup = BeautifulSoup(html_res)
-
     if req['session']['new']:
         # Это новый пользователь.
         # Инициализируем сессию и поприветствуем его.
