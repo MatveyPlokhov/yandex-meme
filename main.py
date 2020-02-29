@@ -1,29 +1,26 @@
+# coding=utf-8
 from __future__ import unicode_literals
 
-# Импортируем модули для работы с JSON и логами.
 import json
 import logging
 import os
 import requests
 
 from bs4 import BeautifulSoup
-# Импортируем подмодули Flask для запуска веб-сервиса.
 from flask import Flask, request
 
 app = Flask(__name__)
 
 logging.basicConfig(level=logging.DEBUG)
 
-# Хранилище данных о сессиях.
 sessionStorage = {}
 
-HOST = 'https://dialogs.yandex.net'
+skill_id = "caee0d3a-e0ff-4720-a4ac-e45205aee08b"
+token = "AgAAAAAIOCSpAAT7o82ir0CsuUqWn1L6FO9DXZE"
 
 
-# Задаем параметры приложения Flask.
 @app.route("/", methods=['POST'])
 def main():
-    # Функция получает тело запроса и возвращает ответ.
     logging.info('Request: %r', request.json)
 
     response = {
@@ -45,33 +42,30 @@ def main():
     )
 
 
-# Функция для непосредственной обработки диалога.
 def handle_dialog(req, res):
     user_id = req['session']['user_id']
 
     url = "https://ru.meming.world/wiki/Special:Random"
     page = requests.get(url)
     soup = BeautifulSoup(page.text, "html.parser")
-    text = soup.find_all('h1')[0].get_text()
+    mainText = soup.find_all('h1')[0].get_text()
     images = soup.findAll('img')
+    mainImageUrl = "https://ru.meming.world/" + images[0]['src']
 
-    # POST / api / v1 / skills / caee0d3a - e0ff - 4720 - a4ac - e45205aee08b / images
-    # Authorization: OAuth <AgAAAAAIOCSpAAT7o82ir0CsuUqWn1L6FO9DXZE>
-    # {"url": "<https://ru.meming.world/"+images[0]['src']+">"}
+    skillsUrl = 'https://dialogs.yandex.net/api/v1/skills/' + skill_id + '/images'
+    headers = {'content-type': 'application/json', 'Authorization': 'OAuth ' + token}
+    r = requests.post(skillsUrl, json={"url": mainImageUrl}, headers=headers)
 
     if req['session']['new']:
-        # Это новый пользователь.
-        # Инициализируем сессию и поприветствуем его.
-
         sessionStorage[user_id] = {
             'suggests': [
-                "Не хочу",
                 "Хочу",
+                "Не хочу",
             ]
         }
 
         res['response']['text'] = 'Привет, хочешь мем?'
-        res['response']['buttons'] = get_suggests(user_id)
+        res['response']['buttons'] = get_buttons(user_id)
         return
 
     # Обрабатываем ответ пользователя.
@@ -82,14 +76,18 @@ def handle_dialog(req, res):
         'да',
         'Хочу',
     ]:
-        res['response']['text'] = text
+        res['response']['card']['title'] = mainText
+        res['response']['card']['button']['text'] = 'mainText'
+        # res['response']['card']['title'] = mainText
+        res['response']['card']['image_id'] = r.json()['image']['id']
         return
 
-    res['response']['buttons'] = get_suggests(user_id)
+    res['response']['buttons'] = get_buttons(user_id)
     return
 
+
 # Функция возвращает две подсказки для ответа.
-def get_suggests(user_id):
+def get_buttons(user_id):
     session = sessionStorage[user_id]
 
     # Выбираем две первые подсказки из массива.
@@ -109,6 +107,13 @@ def get_suggests(user_id):
     })
 
     return suggests
+
+
+def get_card(imageUrl):
+    skillsUrl = 'https://dialogs.yandex.net/api/v1/skills/' + skill_id + '/images'
+    headers = {'content-type': 'application/json', 'Authorization': 'OAuth ' + token}
+    r = requests.post(skillsUrl, json={"url": mainImageUrl}, headers=headers)
+    return imageUrl
 
 
 app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
