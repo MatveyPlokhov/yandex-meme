@@ -64,7 +64,7 @@ def handle_dialog(req, res):
             ]
         }
 
-        res['response']['text'] = 'Привет! Купи слона!' + text
+        res['response']['text'] = 'Привет! Купи слона!' + str(text)
         res['response']['buttons'] = get_suggests(user_id)
         return
 
