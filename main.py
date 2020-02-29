@@ -56,7 +56,12 @@ def handle_dialog(req, res):
             ]
         }
 
-        res['response']['text'] = 'Привет! Купи слона!'
+        response = requests.get('https://ru.meming.world/wiki/Special:Random')
+        html_res = str(response.content)
+        soup = BeautifulSoup(html_res)
+        text = str(soup.find('div', {'class': 'suggestions'}))
+
+        res['response']['text'] = 'Привет! Купи слона!' + text
         res['response']['buttons'] = get_suggests(user_id)
         return
 
