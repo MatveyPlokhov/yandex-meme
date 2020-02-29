@@ -50,7 +50,7 @@ def handle_dialog(req, res):
     response = requests.get('https://ru.meming.world/wiki/Special:Random').decode('utf-8')
     html_res = str(response.content)
     soup = BeautifulSoup(html_res)
-    text = soup.find('h1', {'class': 'firstHeading'}).text
+    text = str(soup.find('h1', {'class': 'firstHeading'}).text)
 
     if req['session']['new']:
         # Это новый пользователь.
@@ -64,7 +64,7 @@ def handle_dialog(req, res):
             ]
         }
 
-        res['response']['text'] = 'Привет! Купи слона!' + str(text)
+        res['response']['text'] = 'Привет! Купи слона!' + text
         res['response']['buttons'] = get_suggests(user_id)
         return
 
