@@ -68,18 +68,18 @@ def handle_dialog(req, res):
         res['response']['buttons'] = get_buttons(user_id)
         return
 
-    # Обрабатываем ответ пользователя.
     if req['request']['original_utterance'].lower() in [
         'мемчанский',
         'мем',
         'новый мем',
         'да',
-        'Хочу',
+        'хочу',
     ]:
         #res['response']['card']['title'] = mainText
         #res['response']['card']['button']['text'] = 'mainText'
         #res['response']['card']['title'] = mainText
         #res['response']['text'] = get_buttons(user_id)
+        res['response']['card']['type'] = 'BigImage'
         res['response']['card']['image_id'] = r.json()['image']['id']
         return
 
