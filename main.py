@@ -86,7 +86,7 @@ def handle_dialog(req, res):
         return
 
     res['response']['buttons'] = get_suggests(user_id)
-
+    return
 
 # Функция возвращает две подсказки для ответа.
 def get_suggests(user_id):
