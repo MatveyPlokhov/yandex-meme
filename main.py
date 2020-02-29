@@ -76,8 +76,8 @@ def handle_dialog(req, res):
         'да',
         'Хочу',
     ]:
-        res['response']['card']['title'] = mainText
-        res['response']['card']['button']['text'] = 'mainText'
+        #res['response']['card']['title'] = mainText
+        #res['response']['card']['button']['text'] = 'mainText'
         # res['response']['card']['title'] = mainText
         res['response']['card']['image_id'] = r.json()['image']['id']
         return
