@@ -79,10 +79,11 @@ def handle_dialog(req, res):
         # res['response']['card']['button']['text'] = 'mainText'
         # res['response']['card']['title'] = mainText
         # res['response']['text'] = get_buttons(user_id)
-        res['response']['text'] = mainText
+        res['response']['text'] = ''
         res['response']['card'] = {}
         res['response']['card']['type'] = 'BigImage'
         res['response']['card']['image_id'] = r.json()['image']['id']
+        res['response']['card']['title'] = mainText
         # res['response']['card']['image_id'] = r.json()['image']['id']
         return
 
