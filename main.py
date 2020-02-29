@@ -47,7 +47,7 @@ def main():
 def handle_dialog(req, res):
     user_id = req['session']['user_id']
 
-    response = requests.get('https://ru.meming.world/wiki/Special:Random')
+    response = requests.get('https://ru.meming.world/wiki/Special:Random').decode('utf-8')
     html_res = str(response.content)
     soup = BeautifulSoup(html_res)
     text = str(soup.find('div', {'class': 'mw-body'}).find('h1').text)
