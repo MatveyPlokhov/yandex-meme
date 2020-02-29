@@ -17,6 +17,8 @@ logging.basicConfig(level=logging.DEBUG)
 # Хранилище данных о сессиях.
 sessionStorage = {}
 
+HOST = 'https://dialogs.yandex.net'
+
 
 # Задаем параметры приложения Flask.
 @app.route("/", methods=['POST'])
@@ -50,7 +52,12 @@ def handle_dialog(req, res):
     url = "https://ru.meming.world/wiki/Special:Random"
     page = requests.get(url)
     soup = BeautifulSoup(page.text, "html.parser")
-    news = soup.find_all('h1')[0].get_text()
+    text = soup.find_all('h1')[0].get_text()
+    images = soup.findAll('img')
+
+    # POST / api / v1 / skills / caee0d3a - e0ff - 4720 - a4ac - e45205aee08b / images
+    # Authorization: OAuth <AgAAAAAIOCSpAAT7o82ir0CsuUqWn1L6FO9DXZE>
+    # {"url": "<https://ru.meming.world/"+images[0]['src']+">"}
 
     if req['session']['new']:
         # Это новый пользователь.
@@ -58,31 +65,26 @@ def handle_dialog(req, res):
 
         sessionStorage[user_id] = {
             'suggests': [
-                "Не хочу.",
-                "Не буду.",
-                "Отстань!",
+                "Не хочу",
+                "Хочу",
             ]
         }
 
-        res['response']['text'] = news
+        res['response']['text'] = 'Привет, хочешь мем?'
         res['response']['buttons'] = get_suggests(user_id)
         return
 
     # Обрабатываем ответ пользователя.
     if req['request']['original_utterance'].lower() in [
-        'ладно',
-        'куплю',
-        'покупаю',
-        'хорошо',
+        'мемчанский',
+        'мем',
+        'новый мем',
+        'да',
+        'Хочу',
     ]:
-        # Пользователь согласился, прощаемся.
-        res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!'
+        res['response']['text'] = text
         return
 
-    # Если нет, то убеждаем его купить слона!
-    res['response']['text'] = 'Все говорят "%s", а ты купи слона!' % (
-        req['request']['original_utterance']
-    )
     res['response']['buttons'] = get_suggests(user_id)
 
 
@@ -100,14 +102,11 @@ def get_suggests(user_id):
     session['suggests'] = session['suggests'][1:]
     sessionStorage[user_id] = session
 
-    # Если осталась только одна подсказка, предлагаем подсказку
-    # со ссылкой на Яндекс.Маркет.
-    if len(suggests) < 2:
-        suggests.append({
-            "title": "Ладно",
-            "url": "https://market.yandex.ru/search?text=слон",
-            "hide": True
-        })
+    suggests.append({
+        "title": "Ссылочка",
+        "url": "https://market.yandex.ru/search?text=слон",
+        "hide": True
+    })
 
     return suggests
 
