@@ -75,14 +75,22 @@ def handle_dialog(req, res):
         'да',
         'хочу',
     ]:
+        cardImages = [{
+            "image_id": r.json()['image']['id']
+        }, {
+            "image_id": r.json()['image']['id']
+        }, {
+            "image_id": r.json()['image']['id']
+        }]
+
         res['response']['text'] = ''
-        #res['response']['card'] = {}
-        #res['response']['card']['type'] = 'BigImage'
-        #res['response']['card']['image_id'] = r.json()['image']['id']
-        #res['response']['card']['title'] = mainText
+        # res['response']['card'] = {}
+        # res['response']['card']['type'] = 'BigImage'
+        # res['response']['card']['image_id'] = r.json()['image']['id']
+        # res['response']['card']['title'] = mainText
         res['response']['card'] = {}
         res['response']['card']['type'] = 'ItemsList'
-        res['response']['card']['items'] = r.json()['image']['id']
+        res['response']['card']['items'] = cardImages
         return
 
     res['response']['text'] = ''
@@ -111,13 +119,6 @@ def get_buttons(user_id):
     })
 
     return suggests
-
-
-def get_card(imageUrl):
-    skillsUrl = 'https://dialogs.yandex.net/api/v1/skills/' + skill_id + '/images'
-    headers = {'content-type': 'application/json', 'Authorization': 'OAuth ' + token}
-    r = requests.post(skillsUrl, json={"url": mainImageUrl}, headers=headers)
-    return imageUrl
 
 
 app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
