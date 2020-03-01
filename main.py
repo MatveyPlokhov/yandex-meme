@@ -83,8 +83,6 @@ def handle_dialog(req, res):
         res['response']['card'] = {}
         res['response']['card']['type'] = 'ItemsList'
         res['response']['card']['items'] = r.json()['image']['id']
-        res['response']['card']['items'] = r.json()['image']['id']
-        res['response']['card']['items'] = r.json()['image']['id']
         return
 
     res['response']['text'] = ''
