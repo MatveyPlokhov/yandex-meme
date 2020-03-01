@@ -81,6 +81,10 @@ def handle_dialog(req, res):
             "image_id": r.json()['image']['id']
         }, {
             "image_id": r.json()['image']['id']
+        }, {
+            "image_id": r.json()['image']['id']
+        }, {
+            "image_id": r.json()['image']['id']
         }]
 
         res['response']['text'] = ''
